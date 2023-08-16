@@ -1,6 +1,6 @@
 import {LitElement, html, css} from 'https://unpkg.com/lit-element@2.4.0/lit-element.js?module';
 
-class TodoistCardEditor extends LitElement {
+class TodoistCard2Editor extends LitElement {
     static get properties() {
         return {
             hass: Object,
@@ -254,7 +254,7 @@ class TodoistCardEditor extends LitElement {
 }
 
 
-class TodoistCard extends LitElement {
+class TodoistCard2 extends LitElement {
     constructor() {
         super();
 
@@ -620,14 +620,14 @@ class TodoistCard extends LitElement {
     }
 }
 
-customElements.define('todoist-card-editor', TodoistCardEditor);
-customElements.define('todoist-card', TodoistCard);
+customElements.define('todoist-card2-editor', TodoistCardEditor2);
+customElements.define('todoist-card2', TodoistCard2);
 
 window.customCards = window.customCards || [];
 window.customCards.push({
     preview: true,
-    type: 'todoist-card',
-    name: 'Todoist Card',
+    type: 'todoist-card2',
+    name: 'Todoist Card2',
     description: 'Custom card for displaying lists from Todoist.',
 });
 
