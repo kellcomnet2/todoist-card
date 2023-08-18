@@ -613,7 +613,7 @@ class TodoistCard2 extends LitElement {
     }
 }
 
-customElements.define('todoist-card2-editor', TodoistCardEditor2);
+customElements.define('todoist-card2-editor', TodoistCard2Editor);
 customElements.define('todoist-card2', TodoistCard2);
 
 window.customCards = window.customCards || [];
