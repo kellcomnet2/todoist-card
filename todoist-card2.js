@@ -352,6 +352,7 @@ class TodoistCard2 extends LitElement {
                 'id': item.id,
             },
         }];
+        console.log(JSON.stringify(commands));
 
         this.hass
             .callService('rest_command', 'todoist', {
