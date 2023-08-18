@@ -293,54 +293,52 @@ class TodoistCard2 extends LitElement {
         return this.random(1, 100) + '-' + (+date) + '-' + date.getMilliseconds();
     }
 
-    itemAdd(e) {
-        if (e.which === 13) {
-            let value = prompt('Please enter the item to add.');
+    itemAdd() {
+        let value = prompt('Please enter the item to add.');
 
-            if (value && value.length > 1) {
-                let stateValue = this.hass.states[this.config.entity].state || undefined;
+        if (value && value.length > 1) {
+            let stateValue = this.hass.states[this.config.entity].state || undefined;
 
-                if (stateValue) {
-                    let uuid = this.getUUID();
+            if (stateValue) {
+                let uuid = this.getUUID();
 
-                    if (!this.config.use_quick_add) {
-                        let commands = [{
-                            'type': 'item_add',
-                            'temp_id': uuid,
-                            'uuid': uuid,
-                            'args': {
-                                'project_id': stateValue,
-                                'content': value,
-                            },
-                        }];
+                if (!this.config.use_quick_add) {
+                    let commands = [{
+                        'type': 'item_add',
+                        'temp_id': uuid,
+                        'uuid': uuid,
+                        'args': {
+                            'project_id': stateValue,
+                            'content': value,
+                        },
+                    }];
 
-                        this.hass
-                            .callService('rest_command', 'todoist', {
-                                url: 'sync',
-                                payload: 'commands=' + JSON.stringify(commands),
-                            })
-                            .then(response => {
-                                this.hass.callService('homeassistant', 'update_entity', {
-                                    entity_id: this.config.entity,
-                                });
+                    this.hass
+                        .callService('rest_command', 'todoist', {
+                            url: 'sync',
+                            payload: 'commands=' + JSON.stringify(commands),
+                        })
+                        .then(response => {
+                            this.hass.callService('homeassistant', 'update_entity', {
+                                entity_id: this.config.entity,
                             });
-                    } else {
-                        let state = this.hass.states[this.config.entity] || undefined;
-                        if (!state) {
-                            return;
-                        }
-
-                        this.hass
-                            .callService('rest_command', 'todoist', {
-                                url: 'quick/add',
-                                payload: 'text=' + value + ' #' + state.attributes.project.name.replaceAll(' ', ''),
-                            })
-                            .then(response => {
-                                this.hass.callService('homeassistant', 'update_entity', {
-                                    entity_id: this.config.entity,
-                                });
-                            });
+                        });
+                } else {
+                    let state = this.hass.states[this.config.entity] || undefined;
+                    if (!state) {
+                        return;
                     }
+
+                    this.hass
+                        .callService('rest_command', 'todoist', {
+                            url: 'quick/add',
+                            payload: 'text=' + value + ' #' + state.attributes.project.name.replaceAll(' ', ''),
+                        })
+                        .then(response => {
+                            this.hass.callService('homeassistant', 'update_entity', {
+                                entity_id: this.config.entity,
+                            });
+                        });
                 }
             }
         }
