@@ -1,5 +1,5 @@
 import {LitElement, html, css} from 'https://unpkg.com/lit-element@2.4.0/lit-element.js?module';
-
+import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 class TodoistCard2Editor extends LitElement {
     static get properties() {
         return {
@@ -89,7 +89,7 @@ class TodoistCard2Editor extends LitElement {
     
     getEntitiesByType(type) {
         return this.hass
-            ? Object.keys(this.hass.states).filter(entity => entity.substr(0, entity.indexOf('.')) === type)
+            ? Object.keys(this.hass.states).filter(entity => entity.substring(0, entity.length - entity.indexOf('.')) === type)
             : [];
     }
 
@@ -296,8 +296,7 @@ class TodoistCard2 extends LitElement {
     
     itemAdd(e) {
         if (e.which === 13) {
-            let input = this.shadowRoot.getElementById('todoist-card-item-add');
-            let value = input.value;
+            let value = prompt('Please enter the item to add.');
             
             if (value && value.length > 1) {
                 let stateValue = this.hass.states[this.config.entity].state || undefined;
@@ -322,8 +321,6 @@ class TodoistCard2 extends LitElement {
                                 payload: 'commands=' + JSON.stringify(commands),
                             })
                             .then(response => {
-                                input.value = '';
-
                                 this.hass.callService('homeassistant', 'update_entity', {
                                     entity_id: this.config.entity,
                                 });
@@ -340,8 +337,6 @@ class TodoistCard2 extends LitElement {
                                 payload: 'text=' + value + ' #' + state.attributes.project.name.replaceAll(' ',''),
                             })
                             .then(response => {
-                                input.value = '';
-    
                                 this.hass.callService('homeassistant', 'update_entity', {
                                     entity_id: this.config.entity,
                                 });
@@ -523,14 +518,11 @@ class TodoistCard2 extends LitElement {
                     : html``}
             </div>
             ${(this.config.show_item_add === undefined) || (this.config.show_item_add !== false)
-                ? html`<input
+                ? html`<button
                     id="todoist-card-item-add"
-                    type="text"
-                    class="todoist-item-add"
                     placeholder="New item..."
-                    enterkeyhint="enter"
-                    @keyup=${this.itemAdd}
-                />`
+                    @click=${this.itemAdd}
+                >Add</button>`
                 : html``}
         </ha-card>`;
     }
