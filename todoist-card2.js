@@ -450,15 +450,15 @@ class TodoistCard2 extends LitElement {
         return html`<ha-card>
             ${(this.config.show_header === undefined) || (this.config.show_header !== false)
                 ? html`<h1 class="card-header">
-                    <div class="name">${state.attributes.friendly_name}</div>
+                    <div class="name" style="float: left;">${state.attributes.friendly_name}</div>
                         ${(this.config.show_item_add === undefined) || (this.config.show_item_add !== false)
                         ?
-                        html`<ha-icon-button
+                html`<div class="name" style="float: right;"><ha-icon-button
                                     class="todoist-card-item-add"
                                     @click=${() => this.itemAdd()}
                                 >
                                     <ha-icon icon="mdi:text-box-plus"></ha-icon>
-                                </ha-icon-button>`
+                                </ha-icon-button></div>`
                         : html``}
                 </h1>`
                 : html``}
