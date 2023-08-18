@@ -1,4 +1,4 @@
-import {LitElement, html, css} from 'https://unpkg.com/lit-element@2.4.0/lit-element.js?module';
+import { LitElement, html, css } from 'https://unpkg.com/lit-element@2.4.0/lit-element.js?module';
 class TodoistCard2Editor extends LitElement {
     static get properties() {
         return {
@@ -6,12 +6,12 @@ class TodoistCard2Editor extends LitElement {
             config: Object,
         };
     }
-    
+
     get _entity() {
         if (this.config) {
             return this.config.entity || '';
         }
-        
+
         return '';
     }
 
@@ -19,15 +19,15 @@ class TodoistCard2Editor extends LitElement {
         if (this.config) {
             return (this.config.show_completed !== undefined) ? this.config.show_completed : 5;
         }
-        
+
         return 5;
     }
-    
+
     get _show_header() {
         if (this.config) {
             return this.config.show_header || true;
         }
-        
+
         return true;
     }
 
@@ -35,7 +35,7 @@ class TodoistCard2Editor extends LitElement {
         if (this.config) {
             return this.config.show_item_add || true;
         }
-        
+
         return true;
     }
 
@@ -43,7 +43,7 @@ class TodoistCard2Editor extends LitElement {
         if (this.config) {
             return this.config.use_quick_add || false;
         }
-        
+
         return false;
     }
 
@@ -51,7 +51,7 @@ class TodoistCard2Editor extends LitElement {
         if (this.config) {
             return this.config.show_item_close || true;
         }
-        
+
         return true;
     }
 
@@ -59,7 +59,7 @@ class TodoistCard2Editor extends LitElement {
         if (this.config) {
             return this.config.show_item_delete || true;
         }
-        
+
         return true;
     }
 
@@ -67,25 +67,25 @@ class TodoistCard2Editor extends LitElement {
         if (this.config) {
             return this.config.only_today_overdue || false;
         }
-        
+
         return false;
     }
-    
+
     setConfig(config) {
         this.config = config;
     }
-    
+
     configChanged(config) {
         const e = new Event('config-changed', {
             bubbles: true,
             composed: true,
         });
-        
-        e.detail = {config: config};
-        
+
+        e.detail = { config: config };
+
         this.dispatchEvent(e);
     }
-    
+
     getEntitiesByType(type) {
         return this.hass
             ? Object.keys(this.hass.states).filter(entity => entity.substring(0, entity.length - entity.indexOf('.')) === type)
@@ -95,7 +95,7 @@ class TodoistCard2Editor extends LitElement {
     isNumeric(v) {
         return !isNaN(parseFloat(v)) && isFinite(v);
     }
-    
+
     valueChanged(e) {
         if (
             !this.config
@@ -104,7 +104,7 @@ class TodoistCard2Editor extends LitElement {
         ) {
             return;
         }
-        
+
         if (e.target.configValue) {
             if (e.target.value === '') {
                 if (!['entity', 'show_completed'].includes(e.target.configValue)) {
@@ -119,15 +119,15 @@ class TodoistCard2Editor extends LitElement {
                 };
             }
         }
-        
+
         this.configChanged(this.config);
     }
-    
+
     render() {
         if (!this.hass) {
             return html``;
         }
-        
+
         const entities = this.getEntitiesByType('sensor');
         const completedCount = [...Array(16).keys()];
 
@@ -143,8 +143,8 @@ class TodoistCard2Editor extends LitElement {
                     .value=${this._entity}
                 >
                     ${entities.map(entity => {
-                        return html`<mwc-list-item .value="${entity}">${entity}</mwc-list-item>`;
-                    })}
+            return html`<mwc-list-item .value="${entity}">${entity}</mwc-list-item>`;
+        })}
                 </ha-select>
             </div>
 
@@ -159,8 +159,8 @@ class TodoistCard2Editor extends LitElement {
                     .value=${this._show_completed}
                 >
                     ${completedCount.map(count => {
-                        return html`<mwc-list-item .value="${count}">${count}</mwc-list-item>`;
-                    })}
+            return html`<mwc-list-item .value="${count}">${count}</mwc-list-item>`;
+        })}
                 </ha-select>
             </div>
             
@@ -232,7 +232,7 @@ class TodoistCard2Editor extends LitElement {
             </div>
         </div>`;
     }
-    
+
     static get styles() {
         return css`
             .card-config ha-select {
@@ -266,7 +266,7 @@ class TodoistCard2 extends LitElement {
             config: Object,
         };
     }
-    
+
     static getConfigElement() {
         return document.createElement('todoist-card-editor');
     }
@@ -275,31 +275,31 @@ class TodoistCard2 extends LitElement {
         if (!config.entity) {
             throw new Error('Entity is not set!');
         }
-        
+
         this.config = config;
     }
 
     getCardSize() {
         return this.hass ? (this.hass.states[this.config.entity].attributes.items.length || 1) : 1;
     }
-    
+
     random(min, max) {
         return Math.floor(Math.random() * (max - min) + min);
     }
 
     getUUID() {
         let date = new Date();
-                    
+
         return this.random(1, 100) + '-' + (+date) + '-' + date.getMilliseconds();
     }
-    
+
     itemAdd(e) {
         if (e.which === 13) {
             let value = prompt('Please enter the item to add.');
-            
+
             if (value && value.length > 1) {
                 let stateValue = this.hass.states[this.config.entity].state || undefined;
-                
+
                 if (stateValue) {
                     let uuid = this.getUUID();
 
@@ -329,11 +329,11 @@ class TodoistCard2 extends LitElement {
                         if (!state) {
                             return;
                         }
-                        
+
                         this.hass
                             .callService('rest_command', 'todoist', {
                                 url: 'quick/add',
-                                payload: 'text=' + value + ' #' + state.attributes.project.name.replaceAll(' ',''),
+                                payload: 'text=' + value + ' #' + state.attributes.project.name.replaceAll(' ', ''),
                             })
                             .then(response => {
                                 this.hass.callService('homeassistant', 'update_entity', {
@@ -345,7 +345,7 @@ class TodoistCard2 extends LitElement {
             }
         }
     }
-    
+
     itemClose(item) {
         let commands = [{
             'type': 'item_close',
@@ -354,7 +354,7 @@ class TodoistCard2 extends LitElement {
                 'id': item.id,
             },
         }];
-        
+
         this.hass
             .callService('rest_command', 'todoist', {
                 url: 'sync',
@@ -380,7 +380,7 @@ class TodoistCard2 extends LitElement {
                 'id': item.id,
             },
         }];
-        
+
         this.hass
             .callService('rest_command', 'todoist', {
                 url: 'sync',
@@ -394,7 +394,7 @@ class TodoistCard2 extends LitElement {
                 // });
             });
     }
-    
+
     itemDelete(item) {
         let commands = [{
             'type': 'item_delete',
@@ -403,7 +403,7 @@ class TodoistCard2 extends LitElement {
                 'id': item.id,
             },
         }];
-        
+
         this.hass
             .callService('rest_command', 'todoist', {
                 url: 'sync',
@@ -428,11 +428,11 @@ class TodoistCard2 extends LitElement {
 
     render() {
         let state = this.hass.states[this.config.entity] || undefined;
-        
+
         if (!state) {
             return html``;
         }
-        
+
         let items = state.attributes.items || [];
         if (this.config.only_today_overdue) {
             items = items.filter(item => {
@@ -440,14 +440,14 @@ class TodoistCard2 extends LitElement {
                     if (/^\d{4}-\d{2}-\d{2}$/.test(item.due.date)) {
                         item.due.date += 'T00:00:00';
                     }
-                    
+
                     return (new Date()).setHours(23, 59, 59, 999) >= (new Date(item.due.date)).getTime();
                 }
 
                 return false;
             });
         }
-        
+
         return html`<ha-card>
             ${(this.config.show_header === undefined) || (this.config.show_header !== false)
                 ? html`<h1 class="card-header">
@@ -456,76 +456,78 @@ class TodoistCard2 extends LitElement {
                 : html``}
             <div class="todoist-list">
                 ${items.length
-                    ? items.map(item => {
-                        return html`<div class="todoist-item ${(item.parent_id != undefined) ? ' todoist-item-idented':''}">
+                ? items.map(item => {
+                    return html`<div class="todoist-item ${(item.parent_id != undefined) ? ' todoist-item-idented' : ''}">
                             ${(this.config.show_item_close === undefined) || (this.config.show_item_close !== false)
-                                ? html`<ha-icon-button
+                            ? html`<ha-icon-button
                                     class="todoist-item-close"
                                     @click=${() => this.itemClose(item)}
                                 >
                                     <ha-icon icon="mdi:checkbox-marked-circle-outline"></ha-icon>
                                 </ha-icon-button>`
-                                : html`<ha-icon
+                            : html`<ha-icon
                                     icon="mdi:circle-medium"
                                 ></ha-icon>`}
                             <div class="todoist-item-text">
                                 ${item.description
-                                    ? html`<span class="todoist-item-content">${item.content}</span>
+                            ? html`<span class="todoist-item-content">${item.content}</span>
                                            <span class="todoist-item-description">${item.description}</span>`
-                                    : item.content}
+                            : item.content}
                             </div>
                             ${(this.config.show_item_delete === undefined) || (this.config.show_item_delete !== false)
-                                ? html`<ha-icon-button
+                            ? html`<ha-icon-button
                                     class="todoist-item-delete"
                                     @click=${() => this.itemDelete(item)}
                                 >
                                     <ha-icon icon="mdi:trash-can-outline"></ha-icon>
                                 </ha-icon-button>`
-                                : html``}
+                            : html``}
                         </div>`;
-                    })
-                    : html`<div class="todoist-list-empty">No uncompleted tasks!</div>`}
+                })
+                : html`<div class="todoist-list-empty">No uncompleted tasks!</div>`}
                 ${this.config.show_completed && this.itemsCompleted
-                    ? this.itemsCompleted.map(item => {
-                            return html`<div class="todoist-item todoist-item-completed">
+                ? this.itemsCompleted.map(item => {
+                    return html`<div class="todoist-item todoist-item-completed">
                                 ${(this.config.show_item_close === undefined) || (this.config.show_item_close !== false)
-                                    ? html`<ha-icon-button
+                            ? html`<ha-icon-button
                                         class="todoist-item-close"
                                         @click=${() => this.itemUncomplete(item)}
                                     >
                                         <ha-icon icon="mdi:plus-outline"></ha-icon>
                                     </ha-icon-button>`
-                                    : html`<ha-icon
+                            : html`<ha-icon
                                         icon="mdi:circle-medium"
                                     ></ha-icon>`}
                                 <div class="todoist-item-text">
                                     ${item.description
-                                        ? html`<span class="todoist-item-content">${item.content}</span>
+                            ? html`<span class="todoist-item-content">${item.content}</span>
                                             <span class="todoist-item-description">${item.description}</span>`
-                                        : item.content}
+                            : item.content}
                                 </div>
                                 ${(this.config.show_item_delete === undefined) || (this.config.show_item_delete !== false)
-                                    ? html`<ha-icon-button
+                            ? html`<ha-icon-button
                                         class="todoist-item-delete"
                                         @click=${() => this.itemDeleteCompleted(item)}
                                     >
                                         <ha-icon icon="mdi:trash-can-outline"></ha-icon>
                                     </ha-icon-button>`
-                                    : html``}
+                            : html``}
                             </div>`;
-                        })
-                    : html``}
+                })
+                : html``}
             </div>
             ${(this.config.show_item_add === undefined) || (this.config.show_item_add !== false)
-                ? html`<button
-                    id="todoist-card-item-add"
-                    placeholder="New item..."
-                    @click=${this.itemAdd}
-                >Add</button>`
+                ?
+                html`<ha-icon-button
+                                    class="todoist-card-item-add"
+                                    @click=${() => this.itemAdd()}
+                                >
+                                    <ha-icon icon="mdi:text-box-plus"></ha-icon>
+                                </ha-icon-button>`
                 : html``}
         </ha-card>`;
     }
-    
+
     static get styles() {
         return css`
             .card-header {
@@ -623,6 +625,6 @@ window.customCards.push({
 });
 
 console.info(
-    '%c TODOIST-CARD ',
+    '%c TODOIST-CARD2 ',
     'color: white; background: orchid; font-weight: 700',
 );
