@@ -1,5 +1,4 @@
 import {LitElement, html, css} from 'https://unpkg.com/lit-element@2.4.0/lit-element.js?module';
-import { DropDownListComponent } from '@syncfusion/ej2-react-dropdowns';
 class TodoistCard2Editor extends LitElement {
     static get properties() {
         return {
