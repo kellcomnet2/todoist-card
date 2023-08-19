@@ -353,7 +353,6 @@ class TodoistCard2 extends LitElement {
                 'id': item.id,
             },
         }];
-        console.log(JSON.stringify(commands));
 
         this.hass
             .callService('rest_command', 'todoist', {
@@ -451,20 +450,14 @@ class TodoistCard2 extends LitElement {
         return html`<ha-card>
             ${(this.config.show_header === undefined) || (this.config.show_header !== false)
                 ? html`<h1 class="card-header">
-                        <table style="width: 100%; ">
-                        <tr>
-                        <td style="text-align: left;">${state.attributes.friendly_name}</td>
-                        ${(this.config.show_item_add === undefined) || (this.config.show_item_add !== false)
-                        ?
+                        ${state.attributes.friendly_name}
+                        ${(this.config.show_item_add === undefined) || (this.config.show_item_add !== false) ?
                         html`
-                        <td style="text-align: right;">
-                        <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(null)}>
-                                    <ha-icon icon="mdi:text-box-plus"></ha-icon>
-                                </ha-icon-button>
-                        </td>`
+                            <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(null)}>
+                                <ha-icon icon="mdi:text-box-plus"></ha-icon>
+                            </ha-icon-button>
+                        `
                         : html``}
-                        </tr>
-                        </table>
                 </h1>`
                 : html``}
             <div class="todoist-list">
@@ -488,17 +481,17 @@ class TodoistCard2 extends LitElement {
                             : item.content}
                             </div>
                             ${(this.config.show_item_delete === undefined) || (this.config.show_item_delete !== false)
-                            ? html`<ha-icon-button
-                                    class="todoist-item-delete"
-                                    @click=${() => this.itemDelete(item)}
-                                >
+                            ? html`
+                                <ha-icon-button class="todoist-item-delete" @click=${() => this.itemDelete(item)}>
                                     <ha-icon icon="mdi:trash-can-outline"></ha-icon>
-                                </ha-icon-button>`
-                            : html``}
-                        ${(item.parent_id != undefined) ? html`` : html`
-                        <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(item.id)}>
+                                </ha-icon-button>
+                            `: html``}
+                            ${((this.config.show_item_add === undefined) || (this.config.show_item_add !== false) && item.parent_id == undefined)
+                            ? html`
+                                <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(item.id)}>
                                     <ha-icon icon="mdi:text-box-plus"></ha-icon>
-                                </ha-icon-button>`}
+                                </ha-icon-button>
+                            `: html``}
                         </div>`;
                 })
                 : html`<div class="todoist-list-empty">No uncompleted tasks!</div>`}
@@ -540,6 +533,7 @@ class TodoistCard2 extends LitElement {
         return css`
             .card-header {
                 padding-bottom: unset;
+                display:flex;
             }
             
             .todoist-list {
@@ -593,6 +587,10 @@ class TodoistCard2 extends LitElement {
 
             .todoist-item-completed .todoist-item-close {
                 color: #808080;
+            }
+
+            .todoist-card-item-add {
+                margin-left: auto;
             }
             
             .todoist-item-delete {
