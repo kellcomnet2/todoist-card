@@ -495,7 +495,7 @@ class TodoistCard2 extends LitElement {
                                     <ha-icon icon="mdi:trash-can-outline"></ha-icon>
                                 </ha-icon-button>`
                             : html``}
-                        ${(this.parent_id != undefined) ? html`` : html`
+                        ${(item.parent_id != undefined) ? html`` : html`
                         <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(item.id)}>
                                     <ha-icon icon="mdi:text-box-plus"></ha-icon>
                                 </ha-icon-button>`}
