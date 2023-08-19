@@ -450,7 +450,7 @@ class TodoistCard2 extends LitElement {
         return html`<ha-card>
             ${(this.config.show_header === undefined) || (this.config.show_header !== false)
                 ? html`<h1 class="card-header">
-                        <table>
+                        <table style="width: 100%; ">
                         <tr>
                         <td style="text-align: left;">${state.attributes.friendly_name}</td>
                         ${(this.config.show_item_add === undefined) || (this.config.show_item_add !== false)
