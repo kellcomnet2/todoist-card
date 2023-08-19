@@ -453,9 +453,11 @@ class TodoistCard2 extends LitElement {
                         ${state.attributes.friendly_name}
                         ${(this.config.show_item_add === undefined) || (this.config.show_item_add !== false) ?
                         html`
-                            <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(null)}>
-                                <ha-icon icon="mdi:text-box-plus"></ha-icon>
-                            </ha-icon-button>
+                            <div class="todoist-controls">
+                                <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(null)}>
+                                    <ha-icon icon="mdi:text-box-plus"></ha-icon>
+                                </ha-icon-button>
+                            </div>
                         `
                         : html``}
                 </h1>`
@@ -465,10 +467,7 @@ class TodoistCard2 extends LitElement {
                 ? items.map(item => {
                     return html`<div class="todoist-item ${(item.parent_id != undefined) ? ' todoist-item-idented' : ''}">
                             ${(this.config.show_item_close === undefined) || (this.config.show_item_close !== false)
-                            ? html`<ha-icon-button
-                                    class="todoist-item-close"
-                                    @click=${() => this.itemClose(item)}
-                                >
+                            ? html`<ha-icon-button class="todoist-item-close" @click=${() => this.itemClose(item)}>
                                     <ha-icon icon="mdi:checkbox-marked-circle-outline"></ha-icon>
                                 </ha-icon-button>`
                             : html`<ha-icon
@@ -480,18 +479,20 @@ class TodoistCard2 extends LitElement {
                                            <span class="todoist-item-description">${item.description}</span>`
                             : item.content}
                             </div>
-                            ${(this.config.show_item_delete === undefined) || (this.config.show_item_delete !== false)
+                            <div class="todoist-controls">
+                                ${(this.config.show_item_delete === undefined) || (this.config.show_item_delete !== false)
                             ? html`
-                                <ha-icon-button class="todoist-item-delete" @click=${() => this.itemDelete(item)}>
-                                    <ha-icon icon="mdi:trash-can-outline"></ha-icon>
-                                </ha-icon-button>
-                            `: html``}
-                            ${((this.config.show_item_add === undefined) || (this.config.show_item_add !== false) && item.parent_id == undefined)
+                                    <ha-icon-button class="todoist-item-delete" @click=${() => this.itemDelete(item)}>
+                                        <ha-icon icon="mdi:trash-can-outline"></ha-icon>
+                                    </ha-icon-button>
+                                `: html``}
+                                ${((this.config.show_item_add === undefined) || (this.config.show_item_add !== false) && item.parent_id == undefined)
                             ? html`
-                                <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(item.id)}>
-                                    <ha-icon icon="mdi:text-box-plus"></ha-icon>
-                                </ha-icon-button>
-                            `: html``}
+                                    <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(item.id)}>
+                                        <ha-icon icon="mdi:text-box-plus"></ha-icon>
+                                    </ha-icon-button>
+                                `: html``}
+                            </div>
                         </div>`;
                 })
                 : html`<div class="todoist-list-empty">No uncompleted tasks!</div>`}
@@ -589,12 +590,11 @@ class TodoistCard2 extends LitElement {
                 color: #808080;
             }
 
-            .todoist-card-item-add {
+            .todoist-controls {
                 margin-left: auto;
             }
             
             .todoist-item-delete {
-                margin-left: auto;
                 color: #800000;
             }
 
