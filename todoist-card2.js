@@ -293,7 +293,7 @@ class TodoistCard2 extends LitElement {
         return this.random(1, 100) + '-' + (+date) + '-' + date.getMilliseconds();
     }
 
-    itemAdd() {
+    itemAdd(parent_id) {
         let value = prompt('Please enter the item to add.');
 
         if (value && value.length > 1) {
@@ -309,6 +309,7 @@ class TodoistCard2 extends LitElement {
                         'uuid': uuid,
                         'args': {
                             'project_id': stateValue,
+                            'parent_id': parent_id,
                             'content': value,
                         },
                     }];
@@ -457,7 +458,7 @@ class TodoistCard2 extends LitElement {
                         ?
                         html`
                         <td style="text-align: right;">
-                        <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd()}>
+                        <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(null)}>
                                     <ha-icon icon="mdi:text-box-plus"></ha-icon>
                                 </ha-icon-button>
                         </td>`
@@ -493,7 +494,11 @@ class TodoistCard2 extends LitElement {
                                 >
                                     <ha-icon icon="mdi:trash-can-outline"></ha-icon>
                                 </ha-icon-button>`
-                            : html``}
+                        : html``}
+
+                        <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(item.parent_id)}>
+                                    <ha-icon icon="mdi:text-box-plus"></ha-icon>
+                                </ha-icon-button>
                         </div>`;
                 })
                 : html`<div class="todoist-list-empty">No uncompleted tasks!</div>`}
