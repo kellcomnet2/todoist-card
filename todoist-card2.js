@@ -466,17 +466,16 @@ class TodoistCard2 extends LitElement {
                 ${items.length
                 ? items.map(item => {
                     return html`<div class="todoist-item ${(item.parent_id != undefined) ? ' todoist-item-idented' : ''}">
-                            ${(this.config.show_item_close === undefined) || (this.config.show_item_close !== false)
-                            ? html`<ha-icon-button class="todoist-item-close" @click=${() => this.itemClose(item)}>
+                        ${(this.config.show_item_close === undefined) || (this.config.show_item_close !== false)
+                            ? html`
+                                <ha-icon-button class="todoist-item-close" @click=${() => this.itemClose(item)}>
                                     <ha-icon icon="mdi:checkbox-marked-circle-outline"></ha-icon>
                                 </ha-icon-button>`
-                            : html`<ha-icon
-                                    icon="mdi:circle-medium"
-                                ></ha-icon>`}
-                            <div class="todoist-item-text">
+                            : html`<ha-icon icon="mdi:circle-medium"></ha-icon>`
+                        }
+                                <div class="todoist-item-text">
                                 ${item.description
-                            ? html`<span class="todoist-item-content">${item.content}</span>
-                                           <span class="todoist-item-description">${item.description}</span>`
+                            ? html`<span class="todoist-item-content">${item.content}</span><span class="todoist-item-description">${item.description}</span>`
                             : item.content}
                             </div>
                             <div class="todoist-controls">
@@ -554,7 +553,7 @@ class TodoistCard2 extends LitElement {
                 flex-direction: row;
                 line-height: 48px;
             }
-			
+            
             .todoist-item-idented {
                 margin-left: 40px;
             }
@@ -592,6 +591,7 @@ class TodoistCard2 extends LitElement {
 
             .todoist-controls {
                 margin-left: auto;
+                display: flex;
             }
             
             .todoist-item-delete {
