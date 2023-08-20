@@ -363,6 +363,7 @@ class TodoistCard2 extends LitElement {
                     'temp_id': uuid,
                     'uuid': uuid,
                     'args': {
+                        'id': item.id,
                         'content': value,
                         'description': newDescription,
                     },
@@ -562,7 +563,7 @@ class TodoistCard2 extends LitElement {
                     </ha-icon-button>
                 `;
                 }
-                if(true){
+                if (true) {
                     ShowEditItemButton = html`
                     <ha-icon-button class="todoist-item-edit" @click=${() => this.itemEdit(item)}>
                         <ha-icon icon="mdi:text-box-edit"></ha-icon>
