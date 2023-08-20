@@ -181,7 +181,7 @@ class TodoistCard2Editor extends LitElement {
                     @change=${this.valueChanged}
                 >
                 </ha-switch>
-                <span>Show text input element for adding new items to the list</span>
+                <span>Allow adding new items/sub-items to the list</span>
             </div>
 
             <div class="option">
@@ -344,6 +344,44 @@ class TodoistCard2 extends LitElement {
             }
         }
     }
+    itemEdit(item) {
+        let value = prompt('Please enter the new content.', item.content);
+        let description = prompt('Please enter the new description.', item.description);
+        let newDescription = item.description;
+        if (description && description.length > 1) {
+            newDescription = description;
+        }
+
+        if (value && value.length > 1) {
+            let stateValue = this.hass.states[this.config.entity].state || undefined;
+
+            if (stateValue) {
+                let uuid = this.getUUID();
+
+                let commands = [{
+                    'type': 'item_update',
+                    'temp_id': uuid,
+                    'uuid': uuid,
+                    'args': {
+                        'content': value,
+                        'description': newDescription,
+                    },
+                }];
+
+                this.hass
+                    .callService('rest_command', 'todoist', {
+                        url: 'sync',
+                        payload: 'commands=' + JSON.stringify(commands),
+                    })
+                    .then(response => {
+                        this.hass.callService('homeassistant', 'update_entity', {
+                            entity_id: this.config.entity,
+                        });
+                    });
+
+            }
+        }
+    }
 
     itemClose(item) {
         let commands = [{
@@ -428,9 +466,10 @@ class TodoistCard2 extends LitElement {
 
     render() {
         let state = this.hass.states[this.config.entity] || undefined;
+        const EmptyElem = html``;
 
         if (!state) {
-            return html``;
+            return EmptyElem;
         }
 
         let items = state.attributes.items || [];
@@ -447,9 +486,9 @@ class TodoistCard2 extends LitElement {
                 return false;
             });
         }
-        const EmptyElem = html``;
 
         let CardHeader = EmptyElem;
+        let CompletedItemsSection = EmptyElem;
 
         if ((this.config.show_header === undefined) || (this.config.show_header !== false)) {
             let HeaderControls = EmptyElem;
@@ -462,13 +501,13 @@ class TodoistCard2 extends LitElement {
                     </div>
                 `;
             }
-            CardHeader = html`<h1 class="card-header">
+            CardHeader = html`
+            <h1 class="card-header">
                 ${state.attributes.friendly_name}
                 ${HeaderControls}
             </h1>`;
         }
 
-        let CompletedItemsSection = EmptyElem;
         if (this.config.show_completed && this.itemsCompleted) {
             CompletedItemsSection = this.itemsCompleted.map(item => {
                 return html`<div class="todoist-item todoist-item-completed">
@@ -495,43 +534,64 @@ class TodoistCard2 extends LitElement {
                         </div>`;
             });
         }
+        let ItemsSection = html`<div class="todoist-list-empty">No uncompleted tasks!</div>`;
+        if (items.length) {
+            ItemsSection = html`${items.map(item => {
+                let ShowCloseItemButton = EmptyElem;
+                let ShowAddItemButton = EmptyElem;
+                let ShowDeleteItemButton = EmptyElem;
+                let ShowEditItemButton = EmptyElem;
 
+                if ((this.config.show_item_close === undefined) || (this.config.show_item_close !== false)) {
+                    ShowCloseItemButton = html`
+                    <ha-icon-button class="todoist-item-close" @click=${() => this.itemClose(item)}>
+                        <ha-icon icon="mdi:checkbox-marked-circle-outline"></ha-icon>
+                    </ha-icon-button>`;
+                }
+                if (((this.config.show_item_add === undefined) || (this.config.show_item_add !== false) && item.parent_id == undefined)) {
+                    ShowAddItemButton = html`
+                    <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(item)}>
+                        <ha-icon icon="mdi:text-box-plus"></ha-icon>
+                    </ha-icon-button>`;
+
+                }
+                if ((this.config.show_item_delete === undefined) || (this.config.show_item_delete !== false)) {
+                    ShowDeleteItemButton = html`
+                    <ha-icon-button class="todoist-item-delete" @click=${() => this.itemDelete(item)}>
+                        <ha-icon icon="mdi:trash-can-outline"></ha-icon>
+                    </ha-icon-button>
+                `;
+                }
+                if(true){
+                    ShowDeleteItemButton = html`
+                    <ha-icon-button class="todoist-item-edit" @click=${() => this.itemEdit(item)}>
+                        <ha-icon icon="mdi:text-box-edit"></ha-icon>
+                    </ha-icon-button>
+                `;
+                }
+
+                return html`
+                    <div class="todoist-item ${(item.parent_id != undefined) ? ' todoist-item-idented' : ''}">
+                        <ha-icon icon="mdi:circle-medium"></ha-icon>
+                        <div class="todoist-item-text">
+                            ${item.description
+                        ? html`<span class="todoist-item-content">${item.content}</span><span class="todoist-item-description">${item.description}</span>`
+                        : item.content}
+                        </div>
+                        <div class="todoist-controls">
+                            ${ShowAddItemButton}
+                            ${ShowEditItemButton}
+                            ${ShowCloseItemButton}
+                            ${ShowDeleteItemButton}
+                        </div>
+                    </div>`;
+            })}`;
+        }
 
         return html`<ha-card>
             ${CardHeader}
             <div class="todoist-list">
-                ${items.length
-                ? items.map(item => {
-                    return html`<div class="todoist-item ${(item.parent_id != undefined) ? ' todoist-item-idented' : ''}">
-                        ${(this.config.show_item_close === undefined) || (this.config.show_item_close !== false)
-                            ? html`
-                                <ha-icon-button class="todoist-item-close" @click=${() => this.itemClose(item)}>
-                                    <ha-icon icon="mdi:checkbox-marked-circle-outline"></ha-icon>
-                                </ha-icon-button>`
-                            : html`<ha-icon icon="mdi:circle-medium"></ha-icon>`
-                        }
-                                <div class="todoist-item-text">
-                                ${item.description
-                            ? html`<span class="todoist-item-content">${item.content}</span><span class="todoist-item-description">${item.description}</span>`
-                            : item.content}
-                            </div>
-                            <div class="todoist-controls">
-                                ${(this.config.show_item_delete === undefined) || (this.config.show_item_delete !== false)
-                            ? html`
-                                    <ha-icon-button class="todoist-item-delete" @click=${() => this.itemDelete(item)}>
-                                        <ha-icon icon="mdi:trash-can-outline"></ha-icon>
-                                    </ha-icon-button>
-                                `: html``}
-                                ${((this.config.show_item_add === undefined) || (this.config.show_item_add !== false) && item.parent_id == undefined)
-                            ? html`
-                                    <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(item)}>
-                                        <ha-icon icon="mdi:text-box-plus"></ha-icon>
-                                    </ha-icon-button>
-                                `: html``}
-                            </div>
-                        </div>`;
-                })
-                : html`<div class="todoist-list-empty">No uncompleted tasks!</div>`}
+                ${ItemsSection}
                 ${CompletedItemsSection}
             </div>
         </ha-card>`;
