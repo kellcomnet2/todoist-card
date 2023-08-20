@@ -268,7 +268,7 @@ class TodoistCard2 extends LitElement {
     }
 
     static getConfigElement() {
-        return document.createElement('todoist-card-editor');
+        return document.createElement('todoist-card2-editor');
     }
 
     setConfig(config) {
