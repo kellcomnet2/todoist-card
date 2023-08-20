@@ -563,7 +563,7 @@ class TodoistCard2 extends LitElement {
                 `;
                 }
                 if(true){
-                    ShowDeleteItemButton = html`
+                    ShowEditItemButton = html`
                     <ha-icon-button class="todoist-item-edit" @click=${() => this.itemEdit(item)}>
                         <ha-icon icon="mdi:text-box-edit"></ha-icon>
                     </ha-icon-button>
