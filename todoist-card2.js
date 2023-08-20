@@ -446,22 +446,28 @@ class TodoistCard2 extends LitElement {
                 return false;
             });
         }
+        const EmptyElem = html``;
+        let CardHeader = EmptyElem;
+        if ((this.config.show_header === undefined) || (this.config.show_header !== false)) {
+            let HeaderControls = EmptyElem;
+            if ((this.config.show_item_add === undefined) || (this.config.show_item_add !== false)) {
+                HeaderControls = html`
+                    <div class="todoist-controls">
+                        <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(null)}>
+                            <ha-icon icon="mdi:text-box-plus"></ha-icon>
+                        </ha-icon-button>
+                    </div>
+                `;
+            }
+            CardHeader = html`<h1 class="card-header">
+                ${state.attributes.friendly_name}
+                ${HeaderControls}
+            </h1>`;
+        }
+
 
         return html`<ha-card>
-            ${(this.config.show_header === undefined) || (this.config.show_header !== false)
-                ? html`<h1 class="card-header">
-                        ${state.attributes.friendly_name}
-                        ${(this.config.show_item_add === undefined) || (this.config.show_item_add !== false) ?
-                        html`
-                            <div class="todoist-controls">
-                                <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(null)}>
-                                    <ha-icon icon="mdi:text-box-plus"></ha-icon>
-                                </ha-icon-button>
-                            </div>
-                        `
-                        : html``}
-                </h1>`
-                : html``}
+            ${CardHeader}
             <div class="todoist-list">
                 ${items.length
                 ? items.map(item => {
@@ -499,15 +505,11 @@ class TodoistCard2 extends LitElement {
                 ? this.itemsCompleted.map(item => {
                     return html`<div class="todoist-item todoist-item-completed">
                                 ${(this.config.show_item_close === undefined) || (this.config.show_item_close !== false)
-                            ? html`<ha-icon-button
-                                        class="todoist-item-close"
-                                        @click=${() => this.itemUncomplete(item)}
-                                    >
+                            ? html`<ha-icon-button class="todoist-item-close" @click=${() => this.itemUncomplete(item)}>
                                         <ha-icon icon="mdi:plus-outline"></ha-icon>
                                     </ha-icon-button>`
-                            : html`<ha-icon
-                                        icon="mdi:circle-medium"
-                                    ></ha-icon>`}
+                            : html`<ha-icon icon="mdi:circle-medium"></ha-icon>`
+                        }
                                 <div class="todoist-item-text">
                                     ${item.description
                             ? html`<span class="todoist-item-content">${item.content}</span>
