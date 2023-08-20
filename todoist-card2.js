@@ -293,8 +293,8 @@ class TodoistCard2 extends LitElement {
         return this.random(1, 100) + '-' + (+date) + '-' + date.getMilliseconds();
     }
 
-    itemAdd(parent_id) {
-        let value = prompt('Please enter the item to add.');
+    itemAdd(parent_item) {
+        let value = prompt('Please enter the item to add' + ((parent_item) ? ' as a sub item to ' + parent_item.content + '.' : '.'));
 
         if (value && value.length > 1) {
             let stateValue = this.hass.states[this.config.entity].state || undefined;
@@ -309,7 +309,7 @@ class TodoistCard2 extends LitElement {
                         'uuid': uuid,
                         'args': {
                             'project_id': stateValue,
-                            'parent_id': parent_id,
+                            'parent_id': parent_item.id,
                             'content': value,
                         },
                     }];
@@ -395,24 +395,25 @@ class TodoistCard2 extends LitElement {
     }
 
     itemDelete(item) {
-        let commands = [{
-            'type': 'item_delete',
-            'uuid': this.getUUID(),
-            'args': {
-                'id': item.id,
-            },
-        }];
-
-        this.hass
-            .callService('rest_command', 'todoist', {
-                url: 'sync',
-                payload: 'commands=' + JSON.stringify(commands),
-            })
-            .then(response => {
-                this.hass.callService('homeassistant', 'update_entity', {
-                    entity_id: this.config.entity,
+        if (confirm('Are you sure you wish to remove: ' + item.content + '?') == true) {
+            let commands = [{
+                'type': 'item_delete',
+                'uuid': this.getUUID(),
+                'args': {
+                    'id': item.id,
+                },
+            }];
+            this.hass
+                .callService('rest_command', 'todoist', {
+                    url: 'sync',
+                    payload: 'commands=' + JSON.stringify(commands),
+                })
+                .then(response => {
+                    this.hass.callService('homeassistant', 'update_entity', {
+                        entity_id: this.config.entity,
+                    });
                 });
-            });
+        }
     }
 
     itemDeleteCompleted(item) {
@@ -447,7 +448,9 @@ class TodoistCard2 extends LitElement {
             });
         }
         const EmptyElem = html``;
+
         let CardHeader = EmptyElem;
+
         if ((this.config.show_header === undefined) || (this.config.show_header !== false)) {
             let HeaderControls = EmptyElem;
             if ((this.config.show_item_add === undefined) || (this.config.show_item_add !== false)) {
@@ -463,6 +466,34 @@ class TodoistCard2 extends LitElement {
                 ${state.attributes.friendly_name}
                 ${HeaderControls}
             </h1>`;
+        }
+
+        let CompletedItemsSection = EmptyElem;
+        if (this.config.show_completed && this.itemsCompleted) {
+            CompletedItemsSection = this.itemsCompleted.map(item => {
+                return html`<div class="todoist-item todoist-item-completed">
+                            ${(this.config.show_item_close === undefined) || (this.config.show_item_close !== false)
+                        ? html`<ha-icon-button class="todoist-item-close" @click=${() => this.itemUncomplete(item)}>
+                                    <ha-icon icon="mdi:plus-outline"></ha-icon>
+                                </ha-icon-button>`
+                        : html`<ha-icon icon="mdi:circle-medium"></ha-icon>`
+                    }
+                            <div class="todoist-item-text">
+                                ${item.description
+                        ? html`<span class="todoist-item-content">${item.content}</span>
+                                        <span class="todoist-item-description">${item.description}</span>`
+                        : item.content}
+                            </div>
+                            ${(this.config.show_item_delete === undefined) || (this.config.show_item_delete !== false)
+                        ? html`<ha-icon-button
+                                    class="todoist-item-delete"
+                                    @click=${() => this.itemDeleteCompleted(item)}
+                                >
+                                    <ha-icon icon="mdi:trash-can-outline"></ha-icon>
+                                </ha-icon-button>`
+                        : html``}
+                        </div>`;
+            });
         }
 
 
@@ -493,7 +524,7 @@ class TodoistCard2 extends LitElement {
                                 `: html``}
                                 ${((this.config.show_item_add === undefined) || (this.config.show_item_add !== false) && item.parent_id == undefined)
                             ? html`
-                                    <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(item.id)}>
+                                    <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(item)}>
                                         <ha-icon icon="mdi:text-box-plus"></ha-icon>
                                     </ha-icon-button>
                                 `: html``}
@@ -501,32 +532,7 @@ class TodoistCard2 extends LitElement {
                         </div>`;
                 })
                 : html`<div class="todoist-list-empty">No uncompleted tasks!</div>`}
-                ${this.config.show_completed && this.itemsCompleted
-                ? this.itemsCompleted.map(item => {
-                    return html`<div class="todoist-item todoist-item-completed">
-                                ${(this.config.show_item_close === undefined) || (this.config.show_item_close !== false)
-                            ? html`<ha-icon-button class="todoist-item-close" @click=${() => this.itemUncomplete(item)}>
-                                        <ha-icon icon="mdi:plus-outline"></ha-icon>
-                                    </ha-icon-button>`
-                            : html`<ha-icon icon="mdi:circle-medium"></ha-icon>`
-                        }
-                                <div class="todoist-item-text">
-                                    ${item.description
-                            ? html`<span class="todoist-item-content">${item.content}</span>
-                                            <span class="todoist-item-description">${item.description}</span>`
-                            : item.content}
-                                </div>
-                                ${(this.config.show_item_delete === undefined) || (this.config.show_item_delete !== false)
-                            ? html`<ha-icon-button
-                                        class="todoist-item-delete"
-                                        @click=${() => this.itemDeleteCompleted(item)}
-                                    >
-                                        <ha-icon icon="mdi:trash-can-outline"></ha-icon>
-                                    </ha-icon-button>`
-                            : html``}
-                            </div>`;
-                })
-                : html``}
+                ${CompletedItemsSection}
             </div>
         </ha-card>`;
     }
