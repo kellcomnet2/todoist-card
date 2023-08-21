@@ -309,7 +309,7 @@ class TodoistCard2 extends LitElement {
                         'uuid': uuid,
                         'args': {
                             'project_id': stateValue,
-                            'parent_id': parent_item.id,
+                            'parent_id': ((parent_item)?parent_item.id:null),
                             'content': value,
                         },
                     }];
