@@ -309,7 +309,7 @@ class TodoistCard2 extends LitElement {
                         'uuid': uuid,
                         'args': {
                             'project_id': stateValue,
-                            'parent_id': ((parent_item)?parent_item.id:null),
+                            'parent_id': ((parent_item) ? parent_item.id : null),
                             'content': value,
                         },
                     }];
@@ -345,17 +345,19 @@ class TodoistCard2 extends LitElement {
         }
     }
     itemEdit(item) {
-        let value = prompt('Please enter the new content.', item.content);
-        let description = prompt('Please enter the new description.', item.description);
-        let newDescription = item.description;
-        if (description && description.length > 1) {
-            newDescription = description;
-        }
 
-        if (value && value.length > 1) {
-            let stateValue = this.hass.states[this.config.entity].state || undefined;
+        let stateValue = this.hass.states[this.config.entity].state || undefined;
 
-            if (stateValue) {
+        if (stateValue) {
+            let value = prompt('Please enter the new content.', item.content);
+
+            if (value && value.length > 1) {
+                let newDescription = item.description;
+                let description = prompt('Please enter the new description.', item.description);
+                if (description) {
+                    newDescription = description;
+                }
+
                 let uuid = this.getUUID();
 
                 let commands = [{
