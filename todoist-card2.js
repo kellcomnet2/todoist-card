@@ -667,6 +667,7 @@ class TodoistCard2 extends LitElement {
                 margin-left: auto;
                 display: flex;
                 width: 48px;
+                min-width: 48px;
                 overflow: hidden;
             }
             .todoist-controls:hover{
