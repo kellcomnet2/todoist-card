@@ -553,21 +553,21 @@ class TodoistCard2 extends LitElement {
                 }
                 if (((this.config.show_item_add === undefined) || (this.config.show_item_add !== false) && item.parent_id == undefined)) {
                     ShowAddItemButton = html`
-                    <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(item)}>
+                    <ha-icon-button class="todoist-card-item-add" title="Add Sub-Item" @click=${() => this.itemAdd(item)}>
                         <ha-icon icon="mdi:text-box-plus"></ha-icon>
                     </ha-icon-button>`;
 
                 }
                 if ((this.config.show_item_delete === undefined) || (this.config.show_item_delete !== false)) {
                     ShowDeleteItemButton = html`
-                    <ha-icon-button class="todoist-item-delete" @click=${() => this.itemDelete(item)}>
+                    <ha-icon-button class="todoist-item-delete" title="Delete Item" @click=${() => this.itemDelete(item)}>
                         <ha-icon icon="mdi:trash-can-outline"></ha-icon>
                     </ha-icon-button>
                 `;
                 }
                 if (true) {
                     ShowEditItemButton = html`
-                    <ha-icon-button class="todoist-item-edit" @click=${() => this.itemEdit(item)}>
+                    <ha-icon-button class="todoist-item-edit" title="Edit Item" @click=${() => this.itemEdit(item)}>
                         <ha-icon icon="mdi:text-box-edit"></ha-icon>
                     </ha-icon-button>
                 `;
@@ -664,9 +664,11 @@ class TodoistCard2 extends LitElement {
                 margin-left: auto;
                 display: flex;
                 width: 48px;
+                overflow: hidden;
             }
             .todoist-controls:hover{
                 width: unset;
+                overflow: unset;
             }
             .todoist-item-delete {
                 color: #800000;
