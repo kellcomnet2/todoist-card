@@ -586,6 +586,9 @@ class TodoistCard2 extends LitElement {
                             ${ShowEditItemButton}
                             ${ShowCloseItemButton}
                             ${ShowDeleteItemButton}
+                            <ha-icon-button class="todoist-item-edit" title="Item Actions">
+                                <ha-icon icon="mdi:menu-open"></ha-icon>
+                            </ha-icon-button>
                         </div>
                     </div>`;
             })}`;
