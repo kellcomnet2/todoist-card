@@ -663,8 +663,11 @@ class TodoistCard2 extends LitElement {
             .todoist-controls {
                 margin-left: auto;
                 display: flex;
+                width: 48px;
             }
-            
+            .todoist-controls:hover{
+                width: unset;
+            }
             .todoist-item-delete {
                 color: #800000;
             }
