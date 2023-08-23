@@ -589,7 +589,7 @@ class TodoistCard2 extends LitElement {
                             ${ShowEditItemButton}
                             ${ShowCloseItemButton}
                             ${ShowDeleteItemButton}
-                            <span style="width:48px; min-width:48px;"">&nbsp;</span>
+                            <span style="width:48px; min-width:48px;">&nbsp;</span>
                         </div>
                     </div>`;
             })}`;
