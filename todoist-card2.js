@@ -476,6 +476,8 @@ class TodoistCard2 extends LitElement {
         }
 
         let items = state.attributes.items || [];
+        console.log(state);
+        console.log(state.attributes);
         if (this.config.only_today_overdue) {
             items = items.filter(item => {
                 if (item.due) {
