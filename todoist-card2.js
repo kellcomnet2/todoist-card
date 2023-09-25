@@ -516,7 +516,7 @@ class TodoistCard2 extends LitElement {
             }
             CardHeader = html`
             <h1 class="card-header">
-                ${state.attributes.friendly_name}
+                ${state.attributes.friendly_name} (${PayloadSize} / 15000)
                 ${HeaderControls}
             </h1>`;
         }
