@@ -476,7 +476,8 @@ class TodoistCard2 extends LitElement {
         }
 
         let items = state.attributes.items || [];
-        console.log(JSON.stringify(state.attributes).length);
+        let PayloadSize = JSON.stringify(state.attributes).length;
+        let OversizedPayload = PayloadSize > 15000
         if (this.config.only_today_overdue) {
             items = items.filter(item => {
                 if (item.due) {
@@ -496,12 +497,18 @@ class TodoistCard2 extends LitElement {
 
         if ((this.config.show_header === undefined) || (this.config.show_header !== false)) {
             let HeaderControls = EmptyElem;
-            if ((this.config.show_item_add === undefined) || (this.config.show_item_add !== false)) {
+            if ((OversizedPayload == false) && (this.config.show_item_add === undefined) || (this.config.show_item_add !== false)) {
                 HeaderControls = html`
                     <div class="todoist-controls">
                         <ha-icon-button class="todoist-card-item-add" @click=${() => this.itemAdd(null)}>
                             <ha-icon icon="mdi:text-box-plus"></ha-icon>
                         </ha-icon-button>
+                    </div>
+                `;
+            } else if (OversizedPayload) {
+                HeaderControls = html`
+                    <div style='color: red;'>
+                        Payload is dangerously large, not allowing changes other than delete of items. Payload should stay less than 15K it is currently ${PayloadSize}
                     </div>
                 `;
             }
@@ -546,13 +553,13 @@ class TodoistCard2 extends LitElement {
                 let ShowDeleteItemButton = EmptyElem;
                 let ShowEditItemButton = EmptyElem;
 
-                if ((this.config.show_item_close === undefined) || (this.config.show_item_close !== false)) {
+                if ((OversizedPayload == false) && (this.config.show_item_close === undefined) || (this.config.show_item_close !== false)) {
                     ShowCloseItemButton = html`
                     <ha-icon-button class="todoist-item-close" @click=${() => this.itemClose(item)}>
                         <ha-icon icon="mdi:checkbox-marked-circle-outline"></ha-icon>
                     </ha-icon-button>`;
                 }
-                if (((this.config.show_item_add === undefined) || (this.config.show_item_add !== false) && item.parent_id == undefined)) {
+                if ((OversizedPayload == false) && ((this.config.show_item_add === undefined) || (this.config.show_item_add !== false) && item.parent_id == undefined)) {
                     ShowAddItemButton = html`
                     <ha-icon-button class="todoist-card-item-add" title="Add Sub-Item" @click=${() => this.itemAdd(item)}>
                         <ha-icon icon="mdi:text-box-plus"></ha-icon>
@@ -566,7 +573,7 @@ class TodoistCard2 extends LitElement {
                     </ha-icon-button>
                 `;
                 }
-                if (true) {
+                if ((OversizedPayload == false)) {
                     ShowEditItemButton = html`
                     <ha-icon-button class="todoist-item-edit" title="Edit Item" @click=${() => this.itemEdit(item)}>
                         <ha-icon icon="mdi:text-box-edit"></ha-icon>
